@@ -7,7 +7,7 @@ Requirements
 * libshout 2.2+
 * `linux64 or darwin64`
 
-for centos should run `yum install libshout-devel` at first
+for centos should run `yum install libshout-devel` at first for build
 
 
 Target folder contains libshout-java.so ready for use on 32-bit Linux. Put it in the user.dir of your project.
