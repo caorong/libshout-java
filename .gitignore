@@ -10,3 +10,4 @@
 /target/surefire
 /target/surefire-reports
 /target/test-classes
+/target
