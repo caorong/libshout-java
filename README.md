@@ -9,6 +9,13 @@ Requirements
 
 for centos should run `yum install libshout-devel` at first for build
 
+```xml
+<dependency>
+    <groupId>com.ximalaya.live</groupId>
+    <artifactId>libshout-java</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
 
 Target folder contains libshout-java.so ready for use on 32-bit Linux. Put it in the user.dir of your project.
 

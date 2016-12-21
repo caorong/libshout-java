@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.gmail.kunicins.olegs</groupId>
+  <groupId>com.ximalaya.live</groupId>
   <artifactId>libshout-java</artifactId>
   <version>3.0.0</version>
   <name>libshout-java</name>
@@ -105,4 +105,20 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<!-- use the following if you're not using a snapshot version. -->
+		<repository>
+			<id>artifactory</id>
+			<name>ximalaya-releases</name>
+			<url>http://artifactory.ximalaya.com/artifactory/ximalaya-releases/</url>
+		</repository>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>artifactory</id>
+			<name>ximalaya-snapshots</name>
+			<url>http://artifactory.ximalaya.com/artifactory/ximalaya-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
