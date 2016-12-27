@@ -116,7 +116,7 @@ public class Jlibshout {
     pushLiveHttpStream(url, 8192);
   }
 
-  public void pushLiveHttpStream(String url, int bufferSize) throws InterruptedException, IOException {
+  public void pushLiveHttpStream(String url, int bufferSize) throws IOException {
     //    InputStream inputStream = new BufferedInputStream(HttpRequest.get(url).stream(), bufferSize);
     int code = HttpRequest.get(url).code();
     if (code != 200) {
@@ -140,7 +140,11 @@ public class Jlibshout {
             outputStream.flush();
           }
         }
-        Thread.sleep(100);
+        try {
+          Thread.sleep(400);
+        } catch (InterruptedException e) {
+          // skip
+        }
       }
     } catch (IOException e) {
       try {
