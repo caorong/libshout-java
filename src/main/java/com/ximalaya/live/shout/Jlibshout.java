@@ -37,12 +37,12 @@ public class Jlibshout {
   private Socket socket;
 
   //  URL url = new URL("http://source:hackme@localhost:8030/res_1065_24");
-  public Jlibshout(String targetHost, int targetPort, String mounter) throws IOException {
+  public Jlibshout(String targetHost, int targetPort, String mounter) throws Exception {
     this("source", "hackme", targetHost, targetPort, mounter);
   }
 
   public Jlibshout(String user, String password, String targetHost, int targetPort, String mounter)
-      throws IOException {
+      throws Exception {
     this.user = user;
     this.password = password;
     this.targetHost = targetHost;
@@ -59,7 +59,7 @@ public class Jlibshout {
     this.iceName = iceName;
   }
 
-  private void init() throws IOException {
+  private void init() throws Exception {
     try {
       socket = new Socket(targetHost, targetPort);
       outputStream = socket.getOutputStream();
@@ -89,7 +89,7 @@ public class Jlibshout {
       String data = lineReader.readLine();
 
       handleResponse(data);
-    } catch (IOException e) {
+    } catch (Exception e) {
       if (socket != null && !socket.isClosed()) {
         try {
           socket.close();
@@ -215,6 +215,15 @@ public class Jlibshout {
     }
   }
 
+  public void refresh() throws Exception {
+    try {
+      close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    init();
+  }
+
   public void close() throws IOException {
     if (socket != null) {
       socket.close();
@@ -233,7 +242,7 @@ public class Jlibshout {
     if (data.startsWith("HTTP/1.0 401")) {
       throw new PushStreamException("auth error! check username and password");
     } else if (data.startsWith("HTTP/1.0 403 Forbidden")) {
-      throw new PushStreamException("invalid operation! this stream is alreay streaming!");
+      throw new PushStreamException("invalid operation! this stream is already streaming!");
     } else {
       if (!data.startsWith("HTTP/1.0 200")) {
         throw new PushStreamException("unknown exception! " + data);
