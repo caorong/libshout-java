@@ -1,5 +1,8 @@
 package com.ximalaya.live.shout;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import com.google.common.annotations.Beta;
 import com.google.common.io.LineReader;
 import com.ximalaya.live.shout.ex.PushStreamException;
 import com.ximalaya.live.shout.ex.ReadStreamException;
@@ -98,6 +102,51 @@ public class Jlibshout {
   }
 
   /**
+   * push mp3 with sleep
+   * 32 4kb/s
+   * 64 8kb/s
+   * <p/>
+   * unaccurate version
+   *
+   * @param mp3
+   * @param bitrate
+   * @throws FileNotFoundException
+   */
+  @Beta
+  public void pushMp3(File mp3, int bitrate) throws IOException {
+    int bufferSize = bitrate <= 32 ? 4096 : 8192;
+
+    InputStream inputStream = new FileInputStream(mp3);
+
+    byte[] buffer = new byte[bufferSize];
+    try {
+      // mainloop, write every specified size, reduce syscall
+      while (true) {
+        int readed = inputStream.read(buffer, 0, bufferSize);
+        // EOF
+        if (readed < 0) {
+          break;
+        } else {
+          outputStream.write(buffer, 0, readed);
+          outputStream.flush();
+        }
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // skip
+        }
+      }
+    } catch (IOException e) {
+      try {
+        inputStream.close();
+      } catch (IOException e1) {
+        // skip
+      }
+      throw e;
+    }
+  }
+
+  /**
    * push 'live' http stream support mp3, ogg, webm etc without sync
    * <p/>
    * sync is dependence on source stream
@@ -108,6 +157,10 @@ public class Jlibshout {
    * about buffersize is 8k
    * e.g mp3
    * 64kbit/s => 8kb/s => sleep time may be 1s will be just in time
+   * <p/>
+   * maybe throw:
+   * <p/>
+   * ReadStreamEx (404), sourceStreamIOEx
    * <p/>
    *
    * @param url source live http stream url
@@ -170,7 +223,9 @@ public class Jlibshout {
     } else if (data.startsWith("HTTP/1.0 403 Forbidden")) {
       throw new PushStreamException("invalid operation! this stream is alreay streaming!");
     } else {
-      throw new PushStreamException("unknown exception! " + data);
+      if (!data.startsWith("HTTP/1.0 200")) {
+        throw new PushStreamException("unknown exception! " + data);
+      }
     }
   }
 
