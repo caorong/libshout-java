@@ -106,3 +106,19 @@ maven install
 #### on Ubuntu, Windows, OpenSuse etc
  
 please commit your story
+
+
+
+## TODO pure java shout
+
+libshout 原理
+
+发数据， 计算这些数据的 时间， 然后手动调用sync sleep 在发送，server 无法阻塞流，nonblocking 的，
+发过多会造成 server 内存占用， 在client 控制。
+
+
+对于 http 的流 的relay 直接 relay 即可，
+
+但是对于 mp3 的文件，需要自己sleep， parse mp3 的头 自己控制 sleep 时间。
+
+TODO https://github.com/mpatric/mp3agic
