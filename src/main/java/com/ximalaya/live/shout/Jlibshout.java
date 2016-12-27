@@ -114,9 +114,13 @@ public class Jlibshout {
    */
   @Beta
   public void pushMp3(File mp3, int bitrate) throws IOException {
-    int bufferSize = bitrate <= 32 ? 4096 : 8192;
-
     InputStream inputStream = new FileInputStream(mp3);
+    pushMp3asStream(inputStream, bitrate);
+  }
+
+  @Beta
+  public void pushMp3asStream(InputStream inputStream, int bitrate) throws IOException {
+    int bufferSize = bitrate <= 32 ? 4096 : 8192;
 
     byte[] buffer = new byte[bufferSize];
     try {
@@ -180,20 +184,23 @@ public class Jlibshout {
     // resued buffer
     byte[] buffer = new byte[bufferSize];
     try {
+      int count = 0;
       // mainloop, write every specified size, reduce syscall
       while (true) {
-        if (inputStream.available() > bufferSize) {
+        // 避免 最后一段
+        if (inputStream.available() > bufferSize || count > 4) {
           int readed = inputStream.read(buffer, 0, bufferSize);
-
           // EOF
           if (readed < 0) {
             break;
           } else {
             outputStream.write(buffer, 0, readed);
             outputStream.flush();
+            count = 0;
           }
         }
         try {
+          count++;
           Thread.sleep(400);
         } catch (InterruptedException e) {
           // skip
