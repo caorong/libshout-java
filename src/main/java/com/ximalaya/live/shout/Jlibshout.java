@@ -34,6 +34,7 @@ public class Jlibshout {
 
   // target icecast  outputStream
   private OutputStream outputStream;
+  private Socket socket;
 
   //  URL url = new URL("http://source:hackme@localhost:8030/res_1065_24");
   public Jlibshout(String targetHost, int targetPort, String mounter) throws IOException {
@@ -59,7 +60,6 @@ public class Jlibshout {
   }
 
   private void init() throws IOException {
-    Socket socket = null;
     try {
       socket = new Socket(targetHost, targetPort);
       outputStream = socket.getOutputStream();
@@ -169,12 +169,11 @@ public class Jlibshout {
    *
    * @param url source live http stream url
    */
-  public void pushLiveHttpStream(String url) throws IOException, InterruptedException {
+  public void pushLiveHttpStream(String url) throws Exception {
     pushLiveHttpStream(url, 8192);
   }
 
-  public void pushLiveHttpStream(String url, int bufferSize) throws IOException {
-    //    InputStream inputStream = new BufferedInputStream(HttpRequest.get(url).stream(), bufferSize);
+  public void pushLiveHttpStream(String url, int bufferSize) throws Exception {
     int code = HttpRequest.get(url).code();
     if (code != 200) {
       throw new ReadStreamException(code);
@@ -206,13 +205,19 @@ public class Jlibshout {
           // skip
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       try {
         inputStream.close();
       } catch (IOException e1) {
         // skip
       }
       throw e;
+    }
+  }
+
+  public void close() throws IOException {
+    if (socket != null) {
+      socket.close();
     }
   }
 
@@ -236,7 +241,7 @@ public class Jlibshout {
     }
   }
 
-  public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws Exception {
     Jlibshout jlibshout = new Jlibshout("localhost", 8030, "/javashout2");
     jlibshout.pushLiveHttpStream("http://192.168.3.52:8030/res_16_64");
   }
