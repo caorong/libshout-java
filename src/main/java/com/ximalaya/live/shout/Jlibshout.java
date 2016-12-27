@@ -66,7 +66,11 @@ public class Jlibshout {
       out.println(String.format("SOURCE %s HTTP/1.0", mounter));
       out.println(String.format("Authorization: Basic %s", HttpRequest.Base64.encode(user + ":" + password)));
       out.println("User-Agent: libshout/2.3.1");
-      // TODO check
+      // TODO add
+      // mimetype = "application/ogg";
+      // mimetype = "audio/mpeg";
+      // mimetype = "video/webm";
+      // mimetype = "audio/webm";
       out.println("Content-Type: audio/mpeg");
       out.println(String.format("ice-name: %s", iceName));
       out.println("ice-public: 0");
