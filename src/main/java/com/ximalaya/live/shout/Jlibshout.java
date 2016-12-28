@@ -13,6 +13,10 @@ import java.net.Socket;
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.common.annotations.Beta;
 import com.google.common.io.LineReader;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
+import com.ximalaya.live.shout.ex.BadFileException;
 import com.ximalaya.live.shout.ex.PushStreamException;
 import com.ximalaya.live.shout.ex.ReadStreamException;
 
@@ -28,6 +32,7 @@ public class Jlibshout {
   private String targetHost;
   private int targetPort;
   private String mounter;
+  private MimeType mimeType;
 
   private String iceName = "no name";
   private String iceDesc = null;
@@ -38,16 +43,22 @@ public class Jlibshout {
 
   //  URL url = new URL("http://source:hackme@localhost:8030/res_1065_24");
   public Jlibshout(String targetHost, int targetPort, String mounter) throws Exception {
-    this("source", "hackme", targetHost, targetPort, mounter);
+    this("source", "hackme", targetHost, targetPort, mounter, MimeType.mp3);
   }
 
-  public Jlibshout(String user, String password, String targetHost, int targetPort, String mounter)
-      throws Exception {
+  //  URL url = new URL("http://source:hackme@localhost:8030/res_1065_24");
+  public Jlibshout(String targetHost, int targetPort, String mounter, MimeType mimeType) throws Exception {
+    this("source", "hackme", targetHost, targetPort, mounter, mimeType);
+  }
+
+  public Jlibshout(String user, String password, String targetHost, int targetPort, String mounter,
+      MimeType mimeType) throws Exception {
     this.user = user;
     this.password = password;
     this.targetHost = targetHost;
     this.targetPort = targetPort;
     this.mounter = mounter;
+    this.mimeType = mimeType;
     init();
   }
 
@@ -70,12 +81,7 @@ public class Jlibshout {
       out.println(String.format("SOURCE %s HTTP/1.0", mounter));
       out.println(String.format("Authorization: Basic %s", HttpRequest.Base64.encode(user + ":" + password)));
       out.println("User-Agent: libshout/2.3.1");
-      // TODO add
-      // mimetype = "application/ogg";
-      // mimetype = "audio/mpeg";
-      // mimetype = "video/webm";
-      // mimetype = "audio/webm";
-      out.println("Content-Type: audio/mpeg");
+      out.println(String.format("Content-Type: %s", mimeType.getContentType()));
       out.println(String.format("ice-name: %s", iceName));
       out.println("ice-public: 0");
       if (iceDesc != null) {
@@ -109,19 +115,24 @@ public class Jlibshout {
    * unaccurate version
    *
    * @param mp3
-   * @param bitrate
    * @throws FileNotFoundException
    */
   @Beta
-  public void pushMp3(File mp3, int bitrate) throws IOException {
+  public void pushMp3(File mp3) throws IOException, BadFileException {
     InputStream inputStream = new FileInputStream(mp3);
-    pushMp3asStream(inputStream, bitrate);
+    try {
+      Mp3File mp3File = new Mp3File(mp3.getAbsolutePath());
+      long l = (long) ((double) mp3File.getLength() / mp3File.getLengthInSeconds());
+      pushMp3asStream(inputStream, (int) l + 1);
+    } catch (UnsupportedTagException e) {
+      throw new BadFileException("parse mp3 error!", e);
+    } catch (InvalidDataException e) {
+      throw new BadFileException("parse mp3 error!", e);
+    }
   }
 
   @Beta
-  public void pushMp3asStream(InputStream inputStream, int bitrate) throws IOException {
-    int bufferSize = bitrate <= 32 ? 4096 : 8192;
-
+  public void pushMp3asStream(InputStream inputStream, int bufferSize) throws IOException {
     byte[] buffer = new byte[bufferSize];
     try {
       // mainloop, write every specified size, reduce syscall
