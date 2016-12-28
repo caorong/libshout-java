@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ximalaya.live</groupId>
     <artifactId>libshout-java</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
     <name>libshout-java</name>
     <description>Java libshout binding</description>
 
