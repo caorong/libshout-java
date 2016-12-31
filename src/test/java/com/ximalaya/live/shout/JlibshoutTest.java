@@ -7,8 +7,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * desc...
  *
@@ -18,8 +16,6 @@ public class JlibshoutTest {
 
   @Test
   public void testPushMp3() throws Exception {
-    //    new Jlibshout("localhost", 8030, "/jshout").pushMp3(
-    //        new File("/Users/caorong/test_ffmpeg/151210_085010_1449708300000_1449720480000.aac.mp3"), 24);
     new Thread(new Runnable() {
       @Override
       public void run() {
@@ -33,7 +29,7 @@ public class JlibshoutTest {
           e.printStackTrace();
         }
         try {
-          jlibshout.pushMp3asStream(mp3, 4096);
+          jlibshout.pushMediaFileAsStream(mp3, 4096);
         } catch (IOException e) {
           e.printStackTrace();
         }

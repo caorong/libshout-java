@@ -123,7 +123,7 @@ public class Jlibshout {
     try {
       Mp3File mp3File = new Mp3File(mp3.getAbsolutePath());
       long l = (long) ((double) mp3File.getLength() / mp3File.getLengthInSeconds());
-      pushMp3asStream(inputStream, (int) l + 1);
+      pushMediaFileAsStream(inputStream, (int) l + 1);
     } catch (UnsupportedTagException e) {
       throw new BadFileException("parse mp3 error!", e);
     } catch (InvalidDataException e) {
@@ -132,7 +132,7 @@ public class Jlibshout {
   }
 
   @Beta
-  public void pushMp3asStream(InputStream inputStream, int bufferSize) throws IOException {
+  public void pushMediaFileAsStream(InputStream inputStream, int bufferSize) throws IOException {
     byte[] buffer = new byte[bufferSize];
     try {
       // mainloop, write every specified size, reduce syscall
